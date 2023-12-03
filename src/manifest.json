@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "Image Converter",
+  "author": "AurorisNet",
+  "homepage_url": "https://github.com/auroris/ImageConverter",
+  "version": "1.0",
+  "description": "Convert and save images as JPG or PNG",
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+  "permissions": [
+    "contextMenus",
+    "activeTab",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icons/icon-48.png",
+    "default_title": "Image Converter"
+  },
+  "web_accessible_resources": [
+    "icons/*.png"
+  ]
+}
