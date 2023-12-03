@@ -3,7 +3,7 @@
   "name": "Image Converter",
   "author": "AurorisNet",
   "homepage_url": "https://github.com/auroris/ImageConverter",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Convert and save images as JPG or PNG",
   "icons": {
     "48": "icons/icon-48.png",
@@ -29,5 +29,6 @@
   },
   "web_accessible_resources": [
     "icons/*.png"
-  ]
+  ],
+  "default_locale": "en"
 }

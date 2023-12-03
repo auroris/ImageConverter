@@ -1,7 +1,7 @@
 // Create a parent menu item
 browser.contextMenus.create({
     id: "save-image",
-    title: "Save Image As...",
+    title: browser.i18n.getMessage("saveImageAs"),
     contexts: ["image"]
 });
 
@@ -9,14 +9,14 @@ browser.contextMenus.create({
 browser.contextMenus.create({
     id: "save-as-png",
     parentId: "save-image",
-    title: "PNG",
+    title: browser.i18n.getMessage("png"),
     contexts: ["image"]
 });
 
 browser.contextMenus.create({
     id: "save-as-jpg",
     parentId: "save-image",
-    title: "JPG",
+    title: browser.i18n.getMessage("jpg"),
     contexts: ["image"]
 });
 

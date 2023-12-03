@@ -1,0 +1,11 @@
+{
+    "saveImageAs": {
+        "message": "Enregistrer l'image sous..."
+    },
+    "png": {
+        "message": "PNG"
+    },
+    "jpg": {
+        "message": "JPG"
+    }
+}
