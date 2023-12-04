@@ -37,7 +37,7 @@ jobs:
     - name: Package Extension
       run: |
         cd src
-        zip -Z deflate ../ImageConverter-${{ env.VERSION }}.zip manifest.json background.js content-script.js _locales/ icons/icon-48.png icons/icon-96.png
+        zip -r -Z deflate ../ImageConverter-${{ env.VERSION }}.zip manifest.json background.js content-script.js _locales/ icons/icon-48.png icons/icon-96.png
 
     - name: Create and Upload Release
       uses: marvinpinto/action-automatic-releases@latest
