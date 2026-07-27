@@ -3,7 +3,7 @@
   "name": "Image Converter",
   "author": "AurorisNet",
   "homepage_url": "https://github.com/auroris/ImageConverter",
-  "version": "2.0",
+  "version": "2.0.1",
   "description": "Convert and save images as JPG or PNG",
   "browser_specific_settings": {
     "gecko": {

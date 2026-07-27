@@ -65,11 +65,22 @@ function isHostGranted(hostname) {
     return false;
 }
 
-// The menu only appears on normal web pages; the browser evaluates these patterns itself,
-// so restricted schemes (about:, view-source:, other extensions' pages...) never show it.
-// The browsers' few restricted domains still show it; clicks there fail with a console
-// error only, as do all other conversion failures.
+// The menu only appears where conversion stands a chance; the browser evaluates these
+// patterns itself, so restricted schemes (about:, view-source:, other extensions' pages...)
+// never show it. The browsers' few restricted domains still show it; clicks there fail
+// with a console error only, as do all other conversion failures.
 const MENU_PATTERNS = ["http://*/*", "https://*/*"];
+
+// Firefox treats each local file as its own origin but keeps a file same-origin with
+// itself, so an image opened directly (the document is the image) re-loads untainted and
+// converts; a local page embedding some other local file still fails as above. Chromium
+// isolates file: URLs with no self exception: it refuses even the same-URL re-load, its
+// MV3 background cannot fetch file: URLs, and the case that would work (a local page with
+// http(s) images) sits behind the per-extension file-access toggle, so the menu stays off
+// there. getBrowserInfo exists only in Firefox.
+if (browser.runtime.getBrowserInfo) {
+    MENU_PATTERNS.push("file://*/*");
+}
 
 // Registered menus outlive the MV3 background script (both browsers persist them), so
 // they are created on install/update and browser startup — which also refreshes the
