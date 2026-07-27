@@ -8,13 +8,14 @@ ImageConverter is a browser extension that enables users to right-click on any i
 
 - **Ease of Use**: Easily convert images by right-clicking and selecting the desired format for instant conversion and download.
 - **Privacy-Focused**: ImageConverter does not read, process, or store any personal data beyond what is necessary for image conversion.
-- **No External Server Interaction**: All image processing is done locally within your browser. The extension does not communicate with any remote servers for its functionality.
+- **No External Server Interaction**: All image processing is done locally within your browser. The extension's only network activity is re-downloading the image being converted from the site that hosts it; nothing is ever sent to the developer or to any third-party service.
 - **Required Permissions**: 
   - `"contextMenus"` to integrate with the browser's context menu.
-  - `"activeTab"` to access the current tab when you interact with the extension.
-  - `"<all_urls>"` to allow image manipulation regardless of the source website, necessary to bypass CORS (Cross-Origin Resource Sharing) restrictions. This permission is essential for the extension to access and convert images from any website.
+  - `"activeTab"` to access a page only when you invoke the extension there, and only in that tab.
+- **Optional Permissions**:
+  - Host access is requested on demand and scoped to a single site: the first time you convert an image hosted on a different website (for example a site's image CDN), Firefox asks for access to that host only. Firefox remembers each grant, and you can review or revoke them individually in the Add-ons Manager's Permissions tab. Most conversions never need any grant at all. (`"<all_urls>"` appears under optional permissions in the manifest because it is the umbrella that allows these narrower per-site requests.) If you would rather grant access to every website once and never be asked again, the same Permissions tab offers an "Access your data for all websites" toggle.
   
-We are committed to user privacy and security. The extension requires the `"<all_urls>"` permission strictly for accessing images across different websites for conversion purposes. It does not use this permission to access or collect your browsing data.
+This extension was developed with user privacy and security top of mind. The extension does not access or collect your browsing data. The manifest also declares Mozilla's data collection permissions as `none`: the extension collects and transmits no data at all.
 
 ## Installation
 
@@ -35,14 +36,15 @@ Contributions to ImageConverter are welcome! If you have ideas for improvement o
 
 To set up the development environment for ImageConverter:
 
-1. Clone the repository: `git clone https://github.com/your-username/imageconverter.git`
-2. Navigate to the project directory: `cd imageconverter`
-3. Make your changes in the code.
+1. Clone the repository: `git clone https://github.com/auroris/ImageConverter.git`
+2. Navigate to the project directory: `cd ImageConverter`
+3. Install the development dependencies: `npm install`
+4. Make your changes in the code. Run `npm run lint` to check them.
 
 ### Testing Changes
 
-1. Open Firefox and navigate to `about:debugging`.
-2. Click "Load Temporary Add-on" and select the `manifest.json` file from your project directory.
+1. Run `npm start` to launch a temporary Firefox profile with the extension loaded; it reloads automatically as you edit.
+2. Alternatively, open Firefox, navigate to `about:debugging`, click "Load Temporary Add-on", and select `src/manifest.json`.
 3. Test your changes in the browser.
 
 ## License

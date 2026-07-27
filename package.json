@@ -1,5 +1,15 @@
 {
+  "name": "imageconverter",
+  "version": "1.2.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . && web-ext lint --source-dir src",
+    "start": "web-ext run --source-dir src"
+  },
   "devDependencies": {
-    "eslint": "^8.55.0"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "globals": "^17.8.0",
+    "web-ext": "^10.5.0"
   }
 }
