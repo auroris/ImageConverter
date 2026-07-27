@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "Allow access to all websites"
+    },
+    "allowAllSitesNote": {
+        "message": "Converts images from any site without asking first. When this is off, the extension asks for access the first time you convert an image hosted on a given site."
     }
 }

@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "Zugriff auf alle Websites erlauben"
+    },
+    "allowAllSitesNote": {
+        "message": "Konvertiert Bilder von jeder Website ohne Nachfrage. Ist dies deaktiviert, fragt die Erweiterung nach Zugriff, wenn zum ersten Mal ein Bild der jeweiligen Website konvertiert wird."
     }
 }

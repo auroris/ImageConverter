@@ -1,5 +1,9 @@
 "use strict";
 
+// Firefox exposes the promise-based extension API as `browser`; Chrome only defines
+// `chrome`, whose MV3 APIs also return promises when no callback is passed
+globalThis.browser ??= globalThis.chrome;
+
 // The background script injects this file at most once per frame (its injection guard
 // probes for this namespace object), so plain assignment never clobbers a live instance
 window.aurorisImageConverter = {
@@ -114,9 +118,15 @@ window.aurorisImageConverter = {
     },
 
     // Convert image bytes fetched by the background script (used for cross-origin images).
+    // They arrive base64-encoded because Chrome's message passing only carries JSON.
     // An ImageBitmap decoded from a Blob has no origin, so no taint rules apply.
     convertBlob: function(request, sendResponse) {
-        createImageBitmap(request.blob).then(bitmap => {
+        const binary = atob(request.bytesBase64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        createImageBitmap(new Blob([bytes], { type: request.mimeType || "" })).then(bitmap => {
             this.encodeAndDownload(bitmap, bitmap.width, bitmap.height, request.format,
                 request.imageUrl, sendResponse);
             bitmap.close();

@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "Autoriser l'accès à tous les sites web"
+    },
+    "allowAllSitesNote": {
+        "message": "Convertit les images de n'importe quel site sans demander au préalable. Si cette option est désactivée, l'extension demande l'accès la première fois que vous convertissez une image hébergée sur un site donné."
     }
 }

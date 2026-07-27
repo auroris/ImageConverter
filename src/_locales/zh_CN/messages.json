@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "允许访问所有网站"
+    },
+    "allowAllSitesNote": {
+        "message": "无需事先询问即可转换任何网站的图片。关闭时,扩展会在您首次转换某个网站托管的图片时请求访问权限。"
     }
 }

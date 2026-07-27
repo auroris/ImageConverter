@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "Consenti l'accesso a tutti i siti web"
+    },
+    "allowAllSitesNote": {
+        "message": "Converte le immagini da qualsiasi sito senza chiedere prima. Se disattivato, l'estensione richiede l'accesso la prima volta che converti un'immagine ospitata su un determinato sito."
     }
 }

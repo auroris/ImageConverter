@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "すべてのウェブサイトへのアクセスを許可"
+    },
+    "allowAllSitesNote": {
+        "message": "どのサイトの画像も確認なしで変換できます。オフの場合、各サイトの画像を初めて変換するときにアクセス許可を求めます。"
     }
 }

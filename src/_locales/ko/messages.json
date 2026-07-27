@@ -7,5 +7,11 @@
     },
     "jpg": {
         "message": "JPG"
+    },
+    "allowAllSites": {
+        "message": "모든 웹사이트 액세스 허용"
+    },
+    "allowAllSitesNote": {
+        "message": "어떤 사이트의 이미지든 확인 없이 변환합니다. 꺼져 있으면 특정 사이트의 이미지를 처음 변환할 때 접근 권한을 요청합니다."
     }
 }

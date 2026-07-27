@@ -1,10 +1,12 @@
 {
   "name": "imageconverter",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "lint": "eslint . && web-ext lint --source-dir src",
-    "start": "web-ext run --source-dir src"
+    "build": "node scripts/build.mjs",
+    "start:firefox": "web-ext run --source-dir src",
+    "start:chromium": "npm run build && web-ext run --source-dir dist/chromium --target chromium"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
