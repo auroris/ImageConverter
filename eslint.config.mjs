@@ -3,7 +3,7 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default defineConfig([
-    { ignores: ["dist/"] },
+    { ignores: ["dist/", "test-results/", "playwright-report/"] },
     js.configs.recommended,
     {
         files: ["src/**/*.js"],
@@ -16,7 +16,11 @@ export default defineConfig([
         }
     },
     {
-        files: ["scripts/**/*.mjs"],
+        files: ["tests/browser/**/*.mjs"],
+        languageOptions: { globals: globals.browser }
+    },
+    {
+        files: ["scripts/**/*.mjs", "tests/**/*.mjs", "playwright.config.mjs"],
         languageOptions: {
             sourceType: "module",
             globals: {

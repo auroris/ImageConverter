@@ -5,6 +5,8 @@
 import { cpSync, mkdirSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseArgs } from "node:util";
+import { parseVersion } from "./release-version.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "src");
@@ -29,6 +31,11 @@ const CHROMIUM_FILES = [
 ];
 
 const manifest = JSON.parse(readFileSync(join(src, "manifest.json"), "utf8"));
+const { values } = parseArgs({ options: { version: { type: "string" } } });
+if (values.version !== undefined) {
+    parseVersion(values.version);
+    manifest.version = values.version;
+}
 
 function emit(browserName, extraFiles, transform) {
     const out = join(dist, browserName);
