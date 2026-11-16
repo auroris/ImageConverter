@@ -21,7 +21,7 @@ jobs:
     steps:
       # No PR checkout or artifact execution in this privileged workflow.
       # The merge API also enforces the required Checks branch protection rule.
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@v9
         with:
           script: |
             const run = context.payload.workflow_run;
