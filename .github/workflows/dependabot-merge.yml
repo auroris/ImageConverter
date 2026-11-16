@@ -1,0 +1,53 @@
+name: Merge Dependabot
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # No PR checkout or artifact execution in this privileged workflow.
+      # The merge API also enforces the required Checks branch protection rule.
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const { data: pulls } = await github.rest.pulls.list({
+              ...context.repo,
+              state: 'open',
+              base: 'main',
+              head: `${context.repo.owner}:${run.head_branch}`
+            });
+            for (const pr of pulls) {
+              if (pr.user.login !== 'dependabot[bot]' || pr.draft ||
+                  pr.head.repo?.full_name !== context.payload.repository.full_name ||
+                  pr.head.sha !== run.head_sha) continue;
+              const { data: merged } = await github.rest.pulls.merge({
+                ...context.repo,
+                pull_number: pr.number,
+                sha: run.head_sha,
+                merge_method: 'squash'
+              });
+              if (!merged.merged) throw new Error(merged.message);
+              // GITHUB_TOKEN merges do not trigger push workflows. Dispatch the
+              // release explicitly; it repeats all checks on the merged main.
+              await github.rest.actions.createWorkflowDispatch({
+                ...context.repo,
+                workflow_id: 'package-extension.yml',
+                ref: 'main'
+              });
+              core.info(`Merged Dependabot PR #${pr.number}; release checks dispatched.`);
+            }

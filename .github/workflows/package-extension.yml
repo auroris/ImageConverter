@@ -2,47 +2,72 @@ name: Package and Release Extension
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
 jobs:
-  build-and-release:
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: checks
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
-
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-
-    - name: Install Dependencies
-      run: npm ci
-
-    - name: Lint
-      run: npm run lint
-
-    - name: Get Version
-      run: echo "VERSION=$(jq -r .version src/manifest.json)" >> $GITHUB_ENV
-
-    - name: Build Per-Browser Packages
-      run: npm run build
-
-    - name: Package Extension
-      run: |
-        (cd dist/firefox && zip -r -Z deflate ../../ImageConverter-firefox-${{ env.VERSION }}.zip .)
-        (cd dist/chromium && zip -r -Z deflate ../../ImageConverter-chromium-${{ env.VERSION }}.zip .)
-
-    - name: Create and Upload Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: v${{ env.VERSION }}
-        name: Release v${{ env.VERSION }}
-        files: |
-          ImageConverter-firefox-${{ env.VERSION }}.zip
-          ImageConverter-chromium-${{ env.VERSION }}.zip
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Skip an already released or superseded commit
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          current_main=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          if [ "$current_main" != "$GITHUB_SHA" ]; then
+            echo 'Superseded by a newer main commit; its workflow will release it.'
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          elif git tag --points-at HEAD | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo 'This commit already has a release tag.'
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'skip=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Select next patch version
+        if: steps.target.outputs.skip != 'true'
+        id: version
+        run: node scripts/release-version.mjs
+      - name: Build and package both browsers
+        if: steps.target.outputs.skip != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          node scripts/build.mjs --version "$VERSION"
+          (cd dist/firefox && zip -r ../../ImageConverter-firefox-"$VERSION".zip .)
+          (cd dist/chromium && zip -r ../../ImageConverter-chromium-"$VERSION".zip .)
+      - name: Publish GitHub release
+        if: steps.target.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" \
+            "ImageConverter-firefox-$VERSION.zip" \
+            "ImageConverter-chromium-$VERSION.zip" \
+            --target "$GITHUB_SHA" \
+            --title "Release v$VERSION" \
+            --generate-notes

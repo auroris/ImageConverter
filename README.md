@@ -48,15 +48,30 @@ To set up the development environment for ImageConverter:
 1. Clone the repository: `git clone https://github.com/auroris/ImageConverter.git`
 2. Navigate to the project directory: `cd ImageConverter`
 3. Install the development dependencies: `npm install`
-4. Make your changes in the code. Run `npm run lint` to check them.
+4. Install the test browsers once: `npx playwright install chromium firefox`.
+5. Make your changes, then run `npm run lint`, `npm test`, and `npm run test:browser`.
 
-`src/` is a single MV3 codebase for all supported browsers; `src/manifest.json` is the Firefox manifest and the Chromium one is derived from it. `npm run build` stages the two installable packages in `dist/firefox` and `dist/chromium` (the release workflow zips exactly these), and pushes to `main` publish both zips as a GitHub release.
+`src/` is a single MV3 codebase for all supported browsers; `src/manifest.json` is the Firefox manifest and the Chromium one is derived from it. `npm run build` stages the two installable packages in `dist/firefox` and `dist/chromium`.
+
+### Automated Checks and Releases
+
+Pull requests run the `Checks` job on Node.js 22. It checks dependency advisories, runs ESLint and Mozilla's extension linter, tests background permission handling and package contents, and runs image-conversion tests in Firefox and Chromium. The browser tests exercise real canvas encoding and downloads, including PNG transparency and JPEG's white background. Extension messaging and permission APIs are simulated; these tests do not exercise the browsers' native permission prompts or context-menu UI.
+
+`npm run audit:ci` reports all npm advisories and fails on moderate, high, or critical findings. One low-severity advisory currently has no upstream fix: [GHSA-gcqx-w48m-w2h4 in deepmerge](https://github.com/advisories/GHSA-gcqx-w48m-w2h4), used by `web-ext` through `addons-linter`. npm reports it against those three packages. It is development tooling and is not included in either extension package. Do not use `npm audit fix --force` for this finding: its proposed downgrade to `web-ext` 3 predates Manifest V3 support.
+
+Dependabot checks npm packages and GitHub Actions weekly, grouping updates to reduce PRs. Its PRs, including major updates, merge automatically only after CI succeeds and the required `Checks` branch rule permits the merge. Other authors' PRs are not automatically merged. The merge workflow never checks out or executes PR code with its write token.
+
+Every push to `main` runs the same checks before publishing Firefox and Chromium ZIPs to GitHub Releases. Dependabot merges explicitly dispatch this workflow because merges performed with `GITHUB_TOKEN` do not trigger push workflows. A failed check blocks publication. This publishes GitHub downloads only; it does not submit updates to browser stores.
+
+Release versions start at `2.0.2` and increase the patch component of the latest `vX.Y.Z` tag. A higher version set in the source takes precedence. The release version is stamped into the packaged manifests; source files keep the development baseline version, and no version-only commit is needed. For an equivalent local build, use `npm run build -- --version 2.0.2`. Re-running a successful release skips the already tagged commit.
+
+Repository setup requires `Checks` as a required status check on `main`, with the branch up to date before merging. The workflows use the built-in `GITHUB_TOKEN`; no additional token secret is required.
 
 ### Testing Changes
 
 Firefox:
 
-1. Run `npm start` to launch a temporary Firefox profile with the extension loaded; it reloads automatically as you edit.
+1. Run `npm run start:firefox` to launch a temporary Firefox profile with the extension loaded; it reloads automatically as you edit.
 2. Alternatively, open Firefox, navigate to `about:debugging`, click "Load Temporary Add-on", and select `src/manifest.json`.
 
 Chrome / Edge:

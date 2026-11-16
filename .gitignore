@@ -125,4 +125,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-/test-results
+
+# Browser test output
+test-results/
+playwright-report/
